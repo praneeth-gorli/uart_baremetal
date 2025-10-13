@@ -1,8 +1,6 @@
 all : j722s-main-r5f0_0-fw
 
 
-
-
 # Define common flags
 ARCH_FLAGS = -mcpu=cortex-r5 -mfpu=vfpv3-d16 -mfloat-abi=hard
 C_FLAGS = -Wall -g -O0 $(ARCH_FLAGS) -c

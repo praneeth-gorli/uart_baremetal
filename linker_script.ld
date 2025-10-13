@@ -4,7 +4,7 @@
 * @brief : Linker script for the AM67A Main Domain R5F core.
 *
 * This script assumes the program will be loaded and executed from TCM.
-*******************************************************************************/
+******************************************************************************/
 
 
 /* output format is 32 bit elf little endian arm                              */
@@ -35,16 +35,21 @@ ENTRY("_vector_table")
 
 SECTIONS 
 {
-    .resource_table : 
-        {
-            . = ALIGN(4096); /* Must be aligned to a page boundary */
-            *(.resource_table)
-        } > ATCM
     .vectors :
         {
             . = ALIGN(4);
             KEEP(*(.vectors))
         } > ATCM
+    .resource_table : 
+        {
+            . = ALIGN(4); 
+            /* Ensure the magic number is the first thing in the section */
+            /* This is the RALA magic number 0x4F4C4152 */
+            LONG(0x4F4C4152) 
+            
+            /* Place the rest of the resource table structure immediately after the magic */
+            *(.resource_table)
+        } > DRAM    
     .text :
         {
             . = ALIGN(4);

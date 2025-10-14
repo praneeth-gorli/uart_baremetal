@@ -1,0 +1,1 @@
+Uart Baremetal for the main domain r5f core of the Texas Instruments AM67A.

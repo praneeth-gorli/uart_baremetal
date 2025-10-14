@@ -15,9 +15,6 @@
 extern uint32_t __bss_start__;
 extern uint32_t __bss_end__;
 extern uint32_t __stack_end__;
-extern uint32_t __data_start__;  // Start of .data VMA (BTCM)
-extern uint32_t __data_end__;    // End of .data VMA (BTCM)
-extern uint32_t __data_load_start__; // The LMA of .data (ATCM)
 
 // Function Prototypes
 extern int main(void);
@@ -37,16 +34,9 @@ void FIQ_Handler(void)       __attribute__((weak, alias("_default_handler")));
  * for the application code and then transfers control to main().
  */
 void _reset_handler(void) {
-    uint32_t * destination, * source;
+    uint32_t * destination;
 
-    // Copy Initialized Data (.data and .rodata are contiguous in your linker script)
-    source = &__data_load_start__;
-    destination = &__data_start__;
     
-    while (destination < &__data_end__) {
-        *destination++ = *source++;
-    }
-
     // Zero-fill the BSS section (uninitialized data)
     destination = &__bss_start__;
     while (destination < &__bss_end__) {

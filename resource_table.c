@@ -2,10 +2,9 @@
 #include <stddef.h>
 
 // --- Standard Resource Table Definitions ---
-#define RP_RSC_TABLE_MAGIC      0x4F4C4152      // "RALA" (backwards)
 #define RP_RSC_TYPE_NULL        0
 #define RP_RSC_TYPE_CARVEOUT    1               // Memory Carveout Resource
-#define RP_RSC_TYPE_TRACE       2
+
 
 struct rsc_btcm_carveout {
     uint32_t type;
@@ -29,8 +28,8 @@ struct resource_table {
 // --- Define the Resource Table ---
 // The offsets array must point to the start of each resource structure.
 struct resource_table __attribute__((section(".resource_table"), used)) resource_table = {
-    .ver = 1,                   // Change to Version 1
-    .num_rsc = 1,               // One resource entry (the BTCM carveout)
+    .ver = 1,                   
+    .num_rsc = 1,               
     .reserved = {0, 0},
     .offset = {
         (uint32_t)offsetof(struct resource_table, rsc_btcm),

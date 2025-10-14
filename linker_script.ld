@@ -29,7 +29,7 @@ MEMORY
     DRAM ( rwx ) : ORIGIN = (0xA1200000), LENGTH = (14M)          
 
     /* Resource Table Memory Section                                          */
-    RSC_TABLE ( rw ) : ORIGIN = (0xA1100000), LENGTH = (0x100000)         
+    RSC_TABLE ( rw ) : ORIGIN = (0xA2100000), LENGTH = (0x100000)         
     
 }
 

@@ -1,13 +1,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// --- Standard Resource Table Definitions ---
-#define RP_RSC_TYPE_NULL        0
-#define RP_RSC_TYPE_CARVEOUT    1               // Memory Carveout Resource
 
-
-
-// Resource Table structure definition (must match kernel definitions)
+// Resource Table structure definition 
 struct resource_table {
     uint32_t ver;
     uint32_t num_rsc;

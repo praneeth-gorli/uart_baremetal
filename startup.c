@@ -30,8 +30,8 @@ void FIQ_Handler(void)       __attribute__((weak, alias("_default_handler")));
 
 
 /* Reset Handler
- * This is the first C function executed after a reset. It prepares the memory
- * for the application code and then transfers control to main().
+ * It prepares the memory for the application code and then transfers control 
+ * to main().
  */
 void _reset_handler(void) {
     uint32_t * destination;

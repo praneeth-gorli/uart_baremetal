@@ -2,8 +2,6 @@
 * @file : linker_script.ld
 *
 * @brief : Linker script for the AM67A Main Domain R5F core.
-*
-* This script assumes the program will be loaded and executed from TCM.
 *******************************************************************************/
 
 
@@ -18,7 +16,7 @@ OUTPUT_FORMAT("elf32-littlearm")
 /* Describing memory regions                                                  */
 MEMORY                                                                         
 {
-                                  
+                             
     /* ATCM started at 0x0 address with size 32KB                             */
     ATCM ( rwx ) : ORIGIN = (0x0), LENGTH = (32K)                                  
                    
@@ -26,7 +24,7 @@ MEMORY
     BTCM ( rwx ) : ORIGIN = (0x41010000), LENGTH = (32K)                         
                    
     /* shared DRAM started at 0xA1200000 with shared size 14MB                */
-    DRAM ( rwx ) : ORIGIN = (0xA1200000), LENGTH = (14M)          
+    DRAM ( rwx ) : ORIGIN = (0x00A2000000), LENGTH = (14M)          
 
     /* Resource Table Memory Section                                          */
     RSC_TABLE ( rw ) : ORIGIN = (0xA2100000), LENGTH = (0x100000)         
@@ -43,10 +41,9 @@ SECTIONS
             . = ALIGN(4);
             KEEP(*(.vectors))
         } > ATCM
-    .resource_table : 
+    .rproc_resource_table_sect (NOLOAD) :
         {
-            . = ALIGN(4096); /* Aligned to a page boundary */
-            *(.resource_table)
+            KEEP(*(.resource_table))
         } > RSC_TABLE    
     .text :
         {

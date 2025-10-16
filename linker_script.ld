@@ -5,6 +5,8 @@
 *******************************************************************************/
 
 
+/* refer this for linker script https://mcyoung.xyz/2021/06/01/linker-script/ */
+
 /* output format is 32 bit elf little endian arm                              */
 OUTPUT_FORMAT("elf32-littlearm")                                                      
 

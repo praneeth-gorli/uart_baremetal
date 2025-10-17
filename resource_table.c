@@ -3,15 +3,15 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define NUM_RESOURCES     (sizeof(resources) / sizeof(resources[0]))
+#define NUM_RESOURCES     4
 #define RSC_CARVEOUT      0
-
+#define RSC_LAST          4
 /**
   * @brief Structure for a CARVEOUT resource.
   * Used to request a block of physical memory to be reserved and shared.
   */
 struct fw_rsc_carveout {
-    uint32_t type;          // //from struct fw_rsc_hdr like RSC_CARVEOUT (0)
+    uint32_t type;          // from struct fw_rsc_hdr like RSC_CARVEOUT (0)
     uint32_t da;            // Device address (Local R5F address)
     uint32_t pa;            // Physical address (Global System address - for remoteproc)
     uint32_t len;           // Length of the memory region
@@ -55,55 +55,60 @@ struct fw_rsc_hdr {
 } __attribute__((packed));
 
 
-// DRAM ( rwx ) : ORIGIN = (0x00A2000000), LENGTH = (14M)
-struct fw_rsc_carveout dram_carveout = {
-    .type = RSC_CARVEOUT,
-    .da = 0xA2000000,       // Device Address (used by the R5F when accessing shared memory)
-    .pa = 0xA2000000,       // Physical Address (used by remoteproc for mapping)
-    .len = 0x00E00000,      // 14M = 14 * 1024 * 1024 = 14680064 = 0xE00000 bytes
-    .flags = 0,             // No special flags
-    .reserved = {0, 0},
-    .name = "DRAM",
+
+struct resource_table_ 
+{
+    struct resource_table resource_table;
+    struct fw_rsc_carveout dram_carveout;
+    struct fw_rsc_carveout atcm_carveout;
+    struct fw_rsc_carveout btcm_carveout;
+    struct fw_rsc_hdr rsc_last;
+}__attribute__((packed));
+
+struct resource_table_ resource_table_ __attribute__((section(".resource_table")))={
+    .resource_table.ver = 1,                 // must be 1 for the remoteproc       
+    .resource_table.num = NUM_RESOURCES,     // count of number of resources   
+    .resource_table.reserved = {0, 0},       // reserved must be 0
+    .resource_table.offset = {
+        offsetof(struct resource_table_, dram_carveout),
+        offsetof(struct resource_table_, atcm_carveout),
+        offsetof(struct resource_table_, btcm_carveout),
+        offsetof(struct resource_table_, rsc_last),
+    },
+    // DRAM ( rwx ) : ORIGIN = (0x00A2000000), LENGTH = (14M)
+    .dram_carveout = {
+        .type = RSC_CARVEOUT,
+        .da = 0xA2000000,       // Device Address (used by the R5F when accessing shared memory)
+        .pa = 0xA2000000,       // Physical Address (used by remoteproc for mapping)
+        .len = 0x00E00000,      // 14M = 14 * 1024 * 1024 = 14680064 = 0xE00000 bytes
+        .flags = 0,             // No special flags
+        .reserved = {0, 0},
+        .name = "DRAM",
+    },
+    //  ATCM ( rwx ) : ORIGIN = (0x0), LENGTH = (32K)
+    .atcm_carveout = {
+        .type = RSC_CARVEOUT,
+        .da = 0x00000000,       // Device Address (used by the R5F when accessing memory)
+        .pa = 0x78400000,       // Physical Address (used by remoteproc for mapping)
+        .len = 32768,           // 32K = 32*1024 = 32768 bytes
+        .flags = 0,             // No special flags
+        .reserved = {0, 0},
+        .name = "ATCM",
+    },
+
+    // BTCM ( rwx ) : ORIGIN = (0x41010000), LENGTH = (32K)
+    .btcm_carveout = {
+        .type = RSC_CARVEOUT,
+        .da = 0x41010000,       // Device Address (used by the R5F when accessing shared memory)
+        .pa = 0x78500000,       // Physical Address (used by remoteproc for mapping)
+        .len = 32768,           // 32K = 32*1024 = 32768 bytes
+        .flags = 0,             // No special flags
+        .reserved = {0, 0},
+        .name = "BTCM",
+    },
+
+    .rsc_last.type=RSC_LAST
+  
 };
-
-
-//  ATCM ( rwx ) : ORIGIN = (0x0), LENGTH = (32K)
-struct fw_rsc_carveout atcm_carveout = {
-    .type = RSC_CARVEOUT,
-    .da = 0x00000000,       // Device Address (used by the R5F when accessing memory)
-    .pa = 0x78400000,       // Physical Address (used by remoteproc for mapping)
-    .len = 32768,           // 32K = 32*1024 = 32768 bytes
-    .flags = 0,             // No special flags
-    .reserved = {0, 0},
-    .name = "ATCM",
-};
-
-// BTCM ( rwx ) : ORIGIN = (0x41010000), LENGTH = (32K)
-struct fw_rsc_carveout btcm_carveout = {
-    .type = RSC_CARVEOUT,
-    .da = 0x78500000,       // Device Address (used by the R5F when accessing shared memory)
-    .pa = 0x41010000,       // Physical Address (used by remoteproc for mapping)
-    .len = 32768,           // 32K = 32*1024 = 32768 bytes
-    .flags = 0,             // No special flags
-    .reserved = {0, 0},
-    .name = "BTCM",
-};
-
-// Array of pointers to the defined resources
-const void * const resources[] = {
-    &dram_carveout,&atcm_carveout,&btcm_carveout
-};
-
-
-// --- Define the Resource Table ---
-struct resource_table __attribute__((section(".resource_table"), used)) resource_table = {
-    .ver = 1,            // must be 1 for the remoteproc       
-    .num = 1,            // count of number of resources   
-    .reserved = {0, 0},  // reserved must be 0
-    .offset =  offsetof(struct resource_table, offset[0]) + (NUM_RESOURCES * sizeof(uint32_t)), 
-};
-
-
-
 
 

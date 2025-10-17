@@ -25,11 +25,11 @@ MEMORY
     /* BTCM started at 0x41010000 with size 32KB                              */
     BTCM ( rwx ) : ORIGIN = (0x41010000), LENGTH = (32K)                         
                    
-    /* shared DRAM started at 0xA1200000 with shared size 14MB                */
-    DRAM ( rwx ) : ORIGIN = (0x00A2000000), LENGTH = (14M)          
+    /* shared DRAM started at 0xA2000000 with shared size 14MB                */
+    DRAM ( rwx ) : ORIGIN = (0xA2000000), LENGTH = (14M)          
 
     /* Resource Table Memory Section                                          */
-    RSC_TABLE ( rw ) : ORIGIN = (0xA2100000), LENGTH = (0x100000)         
+    RSC_TABLE ( rw ) : ORIGIN = (0xA1100000), LENGTH = (0x100000)         
     
 }
 

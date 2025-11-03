@@ -1,31 +1,25 @@
-all : j722s-main-r5f0_0-fw
+APP ?= test.elf
+APP_SOURCES ?= test.c uart.c
 
+CROSS_COMPILE ?= arm-none-eabi-
 
-ARCH_FLAGS = -mcpu=cortex-r5 -mfpu=vfpv3-d16 -mfloat-abi=hard
-C_FLAGS = -Wall -g -O0 $(ARCH_FLAGS) -c
-LDFLAGS = -nostdlib -nostartfiles $(ARCH_FLAGS) -T linker_script.ld
+.PHONY: $(APP)
 
-OBJECTS = main.o uart.o startup.o startup1.o resource_table.o
+CROSS_CC ?= $(CROSS_COMPILE)gcc
+CROSS_SIZE ?= $(CROSS_COMPILE)size
+CROSS_OBJDUMP ?= $(CROSS_COMPILE)objdump
 
-all : j722s-main-r5f0_0-fw
+ARCH ?= r5
 
-j722s-main-r5f0_0-fw : $(OBJECTS)
-	arm-none-eabi-gcc $(LDFLAGS) $(OBJECTS) -o j722s-main-r5f0_0-fw
+ifeq ($(ARCH),r5)
+	CFLAGS += -mcpu=cortex-r5
+endif
 
-startup1.o : startup1.s
-	arm-none-eabi-gcc $(ARCH_FLAGS) -c startup1.s -o startup1.o
+all: $(APP)
 
-main.o : main.c 
-	arm-none-eabi-gcc $(C_FLAGS) main.c -o  main.o
+clean:
+	rm -f $(APP)
 
-uart.o : uart.c
-	arm-none-eabi-gcc $(C_FLAGS) uart.c -o uart.o
-
-startup.o : startup.c
-	arm-none-eabi-gcc $(C_FLAGS) startup.c -o startup.o
-
-resource_table.o : resource_table.c
-	arm-none-eabi-gcc $(C_FLAGS) resource_table.c -o resource_table.o
-
-clean : 
-	rm -f *.o j722s-main-r5f0_0-fw
+$(APP): $(APP_SOURCES) gcc.ld
+	$(CROSS_CC) $(CFLAGS) -Og --specs=nosys.specs --specs=nano.specs -T gcc.ld -o $(APP) $(APP_SOURCES)
+	$(CROSS_SIZE) $(APP)

@@ -1,0 +1,8 @@
+# copying file to the firmwre folder in the sd card
+sudo cp test.elf /media/admin1/rootfs/lib/firmware/j722s-main-r5f0_0-fw
+
+# to read the trace of the remoteproc4
+sudo cat /sys/kernel/debug/remoteproc/remoteproc4/trace0
+
+# to view the resource table of the remoteproc4
+cat /sys/kernel/debug/remoteproc/remoteproc0/resource_table

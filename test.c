@@ -75,7 +75,7 @@ const RPMessage_ResourceTable gRPMessage_linuxResourceTable __attribute__ ((sect
 int main() {
     uart1_init();
     addlog("uart1_init completed execution\n");
-    uart1_putc('A');
+    uart1_puts("hello");
     addlog("Uart putc written A\n");
     while(1);
     return 0;

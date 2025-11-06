@@ -1,4 +1,4 @@
-APP ?= test.elf
+APP ?= j722s-main-r5f0_0-fw
 APP_SOURCES ?= test.c uart.c
 
 CROSS_COMPILE ?= arm-none-eabi-
@@ -7,19 +7,12 @@ CROSS_COMPILE ?= arm-none-eabi-
 
 CROSS_CC ?= $(CROSS_COMPILE)gcc
 CROSS_SIZE ?= $(CROSS_COMPILE)size
-CROSS_OBJDUMP ?= $(CROSS_COMPILE)objdump
-
-ARCH ?= r5
-
-ifeq ($(ARCH),r5)
-	CFLAGS += -mcpu=cortex-r5
-endif
 
 all: $(APP)
 
 clean:
 	rm -f $(APP)
 
-$(APP): $(APP_SOURCES) gcc.ld
-	$(CROSS_CC) $(CFLAGS) -Og --specs=nosys.specs --specs=nano.specs -T gcc.ld -o $(APP) $(APP_SOURCES)
+$(APP): $(APP_SOURCES) linker_script.ld
+	$(CROSS_CC) $(CFLAGS) -mcpu=cortex-r5 -Og --specs=nosys.specs --specs=nano.specs -T linker_script.ld -o $(APP) $(APP_SOURCES)
 	$(CROSS_SIZE) $(APP)

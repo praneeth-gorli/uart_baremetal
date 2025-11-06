@@ -1,18 +1,12 @@
 #include <stdint.h>
 #include "ipc_rpmsg_linux_resource_table.h"
-#include <string.h>
+#include "uart.h"
 
 int logindex=0;
 void addlog(char* str);
-void uart1_init(void);
-void uart1_putc(char);
-void uart1_puts(const char *);
-
-
 
 void Reset_Handler  (void) __attribute__ ((naked));
 void Default_Handler(void);
-
 void Undef_Handler (void) __attribute__ ((weak, alias("Default_Handler")));
 void SVC_Handler   (void) __attribute__ ((weak, alias("Default_Handler")));
 void PAbt_Handler  (void) __attribute__ ((weak, alias("Default_Handler")));
@@ -42,15 +36,15 @@ void Default_Handler() {
     while(1);
 }
 
-#define DebugP_MEM_LOG_SIZE 1024
-__attribute__((section (".log_shared_mem"))) char gDebugMemLog[DebugP_MEM_LOG_SIZE];
+#define Debug_MEM_LOG_SIZE 1024
+__attribute__((section (".log_shared_mem"))) char gDebugMemLog[Debug_MEM_LOG_SIZE];
 
 const RPMessage_ResourceTable gRPMessage_linuxResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) =
 {
     {
-        1U,         /* we're the first version that implements this */
-        2U,         /* number of entries, MUST be 2 */
-        { 0U, 0U, } /* reserved, must be zero */
+        1U,         /* version             */
+        2U,         /* number of entries   */
+        { 0U, 0U, } /* reserved            */
     },
     /* offsets to the entries */
     {
@@ -67,28 +61,23 @@ const RPMessage_ResourceTable gRPMessage_linuxResourceTable __attribute__ ((sect
     { RPMESSAGE_RSC_VRING_ADDR_ANY, 4096U, 256U, 2U, 0U },
     {
         (RPMESSAGE_RSC_TRACE_INTS_VER0 | RPMESSAGE_RSC_TYPE_TRACE),
-        (uint32_t)gDebugMemLog, DebugP_MEM_LOG_SIZE,
+        (uint32_t)gDebugMemLog, Debug_MEM_LOG_SIZE,
         0, "trace:r5fss0_0",
     },
 };
 
 int main() {
     uart1_init();
-    addlog("uart1_init completed execution\n");
-    uart1_puts("hello");
-    addlog("Uart putc written A\n");
+    uart1_puts("hello world");
     while(1);
     return 0;
 }
-
 
 
 void addlog(char* str)
 {
     while(*str!='\0')
     {
-        gDebugMemLog[logindex]=*str;
-        str++;
-        logindex++;
+        gDebugMemLog[logindex++]=*str++;
     }
 }
